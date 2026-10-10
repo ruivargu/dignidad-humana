@@ -38,15 +38,15 @@ a{color:var(--violet)}
 .top h1{font-family:var(--f-head);font-weight:600;font-size:clamp(1.8rem,4.4vw,2.9rem);line-height:1.18;margin:0 0 22px;color:var(--head);max-width:26ch;text-wrap:balance}
 .top h1 span{display:block;width:fit-content;max-width:100%;background:var(--marker);color:var(--on-marker);padding:.04em .3em .1em;margin:0 0 .15em -.3em;clip-path:polygon(0 8%,2% 0,50% 5%,100% 0,99% 55%,100% 100%,55% 95%,0 100%)}
 .top p.lead{max-width:60ch;font-size:1.2rem;margin:0}
-.hero-ticker{margin:22px 0 0;max-width:46ch;background:var(--w-green);border-radius:12px;padding:12px 18px}
+.hero-ticker{margin:22px auto 0;max-width:46ch;background:var(--w-green);border-radius:12px;padding:12px 24px;text-align:center}
 .hero-ticker-list{position:relative;margin:0;padding:0;list-style:none;height:1.7em}
-.hero-ticker-list li{position:absolute;inset:0;display:flex;align-items:center;margin:0;max-width:none;color:var(--head);font-family:var(--f-head);font-weight:500;font-size:1.05rem;opacity:0;transform:translateY(10px);transition:opacity .55s ease,transform .55s ease}
+.hero-ticker-list li{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;margin:0;max-width:none;color:var(--head);font-family:var(--f-head);font-weight:500;font-size:1.05rem;opacity:0;transform:translateY(10px);transition:opacity .55s ease,transform .55s ease}
 .hero-ticker-list li.on{opacity:1;transform:translateY(0)}
-.hero-ticker-dots{display:flex;gap:6px;margin:12px 0 0;padding:0;list-style:none}
+.hero-ticker-dots{display:flex;justify-content:center;gap:6px;margin:12px 0 0;padding:0;list-style:none}
 .hero-ticker-dots span{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s}
 .hero-ticker-dots span.on{background:var(--violet);transform:scale(1.35)}
 @media (prefers-reduced-motion:reduce){
-  .hero-ticker-list{position:static;height:auto;display:flex;flex-wrap:wrap;row-gap:4px}
+  .hero-ticker-list{position:static;height:auto;display:flex;flex-wrap:wrap;justify-content:center;row-gap:4px}
   .hero-ticker-list li{position:static;opacity:1;transform:none;color:var(--muted);font-family:var(--f-body);font-weight:400;font-size:.95rem;display:inline-flex}
   .hero-ticker-list li:not(:first-child)::before{content:"";width:4px;height:4px;flex:none;border-radius:50%;background:var(--rule);margin:0 10px;display:inline-block}
   .hero-ticker-dots{display:none}
