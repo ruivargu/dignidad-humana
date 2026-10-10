@@ -38,19 +38,22 @@ a{color:var(--violet)}
 .top h1{font-family:var(--f-head);font-weight:600;font-size:clamp(1.8rem,4.4vw,2.9rem);line-height:1.18;margin:0 0 22px;color:var(--head);max-width:26ch;text-wrap:balance}
 .top h1 span{display:block;width:fit-content;max-width:100%;background:var(--marker);color:var(--on-marker);padding:.04em .3em .1em;margin:0 0 .15em -.3em;clip-path:polygon(0 8%,2% 0,50% 5%,100% 0,99% 55%,100% 100%,55% 95%,0 100%)}
 .top p.lead{max-width:60ch;font-size:1.2rem;margin:0}
-.hero-ticker{margin:22px auto 0;max-width:46ch;background:var(--w-green);border-radius:12px;padding:12px 24px;text-align:center}
-.hero-ticker-list{position:relative;margin:0;padding:0;list-style:none;height:1.7em}
-.hero-ticker-list li{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;margin:0;max-width:none;color:var(--head);font-family:var(--f-head);font-weight:500;font-size:1.05rem;opacity:0;transform:translateY(10px);transition:opacity .55s ease,transform .55s ease}
-.hero-ticker-list li.on{opacity:1;transform:translateY(0)}
-.hero-ticker-dots{display:flex;justify-content:center;gap:6px;margin:12px 0 0;padding:0;list-style:none}
-.hero-ticker-dots span{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s}
-.hero-ticker-dots span.on{background:var(--violet);transform:scale(1.35)}
+.hero-flip{display:flex;justify-content:center;gap:16px;margin:24px 0 0}
+.flipcard{width:clamp(80px,22vw,112px);aspect-ratio:1;perspective:900px}
+.flipcard-inner{position:relative;width:100%;height:100%;transition:transform .7s cubic-bezier(.4,.2,.2,1);transform-style:preserve-3d}
+.flipcard-inner.flipped{transform:rotateY(180deg)}
+.flipcard-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:16px;background:var(--w-green);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10%;text-align:center}
+.flipcard-back{transform:rotateY(180deg)}
+.fc-icon{width:40%;flex:none;color:var(--head)}
+.fc-text{font-family:var(--f-head);font-weight:500;font-size:.72rem;line-height:1.25;color:var(--head)}
+.hero-flip-fallback{display:none}
 @media (prefers-reduced-motion:reduce){
-  .hero-ticker-list{position:static;height:auto;display:flex;flex-wrap:wrap;justify-content:center;row-gap:4px}
-  .hero-ticker-list li{position:static;opacity:1;transform:none;color:var(--muted);font-family:var(--f-body);font-weight:400;font-size:.95rem;display:inline-flex}
-  .hero-ticker-list li:not(:first-child)::before{content:"";width:4px;height:4px;flex:none;border-radius:50%;background:var(--rule);margin:0 10px;display:inline-block}
-  .hero-ticker-dots{display:none}
+  .hero-flip{display:none}
+  .hero-flip-fallback{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 18px;margin:24px 0 0;padding:0;list-style:none}
+  .hero-flip-fallback li{display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:.9rem;max-width:none}
+  .hero-flip-fallback svg{width:18px;height:18px;flex:none;color:var(--rule)}
 }
+@media (max-width:420px){.hero-flip{gap:10px}}
 .top-grid{display:grid;gap:30px}
 .top-media{margin:28px 0 0;border:1.5px solid var(--rule);border-radius:16px;overflow:hidden;background:var(--soft)}
 .top-media img{display:block;width:100%;height:auto}
@@ -258,18 +261,35 @@ footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;ju
 <p class="kicker">Situación de aprendizaje · 3º y 4º de ESO</p>
 <h1><span>¿Cuánto vale una persona?</span> Dignidad humana en 120 segundos</h1>
 <p class="lead">Guía didáctica con diez sesiones por curso, itinerarios para 3º y 4º ESO, fichas de sesión y evaluación. El producto final es un vídeo de dos minutos para el X Premio Escolar Valores Democráticos.</p>
-<div class="hero-ticker" aria-label="Datos clave de la situación de aprendizaje">
-<ul class="hero-ticker-list">
-<li class="on">10 sesiones por curso</li>
-<li>Interdisciplinar o por materia</li>
-<li>Dentro del Plan de Acción Tutorial</li>
-<li>Impacto en la comunidad educativa</li>
-<li>Participación en concurso</li>
-<li>Producto final visual</li>
-<li>2 itinerarios: 3º ESO · 4º ESO</li>
-</ul>
-<div class="hero-ticker-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+<div class="hero-flip" aria-label="Datos clave de la situación de aprendizaje">
+<div class="flipcard" data-items='[{"icon":"sesion","text":"10 sesiones por curso"},{"icon":"impacto","text":"Impacto en la comunidad educativa"},{"icon":"itinerario","text":"2 itinerarios: 3º ESO · 4º ESO"}]'>
+<div class="flipcard-inner">
+<div class="flipcard-face flipcard-front"><svg class="fc-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg><span class="fc-text"></span></div>
+<div class="flipcard-face flipcard-back"><svg class="fc-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg><span class="fc-text"></span></div>
 </div>
+</div>
+<div class="flipcard" data-items='[{"icon":"interdisciplinar","text":"Interdisciplinar o por materia"},{"icon":"participacion","text":"Participación en concurso"}]'>
+<div class="flipcard-inner">
+<div class="flipcard-face flipcard-front"><svg class="fc-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg><span class="fc-text"></span></div>
+<div class="flipcard-face flipcard-back"><svg class="fc-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg><span class="fc-text"></span></div>
+</div>
+</div>
+<div class="flipcard" data-items='[{"icon":"tutoria","text":"Dentro del Plan de Acción Tutorial"},{"icon":"video","text":"Producto final visual"}]'>
+<div class="flipcard-inner">
+<div class="flipcard-face flipcard-front"><svg class="fc-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg><span class="fc-text"></span></div>
+<div class="flipcard-face flipcard-back"><svg class="fc-icon" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"></svg><span class="fc-text"></span></div>
+</div>
+</div>
+</div>
+<ul class="hero-flip-fallback">
+<li><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="10" y="14" width="44" height="40" rx="6"/><line x1="10" y1="24" x2="54" y2="24"/><line x1="20" y1="8" x2="20" y2="18"/><line x1="44" y1="8" x2="44" y2="18"/><path d="M22 38l7 7 13-15"/></svg>10 sesiones por curso</li>
+<li><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="26" r="14"/><circle cx="40" cy="26" r="14"/><circle cx="32" cy="40" r="14"/></svg>Interdisciplinar o por materia</li>
+<li><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="32" cy="32" r="22"/><path d="M40 24l-6 14-14 6 6-14z" fill="currentColor" stroke="none"/></svg>Dentro del Plan de Acción Tutorial</li>
+<li><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="32" cy="32" r="4" fill="currentColor" stroke="none"/><circle cx="32" cy="32" r="14"/><circle cx="32" cy="32" r="24"/></svg>Impacto en la comunidad educativa</li>
+<li><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10h24v8a12 12 0 0 1-24 0z"/><path d="M20 12h-7a9 9 0 0 0 9 9"/><path d="M44 12h7a9 9 0 0 1-9 9"/><line x1="32" y1="30" x2="32" y2="42"/><line x1="24" y1="42" x2="40" y2="42"/><line x1="22" y1="54" x2="42" y2="54"/></svg>Participación en concurso</li>
+<li><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="14" width="48" height="36" rx="6"/><path d="M26 23l16 9-16 9z" fill="currentColor" stroke="none"/></svg>Producto final visual</li>
+<li><svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M32 54V34"/><path d="M32 34c0-10-10-10-10-20"/><path d="M32 34c0-10 10-10 10-20"/><circle cx="22" cy="12" r="3" fill="currentColor" stroke="none"/><circle cx="42" cy="12" r="3" fill="currentColor" stroke="none"/><circle cx="32" cy="56" r="3" fill="currentColor" stroke="none"/></svg>2 itinerarios: 3º ESO · 4º ESO</li>
+</ul>
 </div>
 <figure class="top-media"><img src="img/portada.jpg" alt="Vista trasera de una persona en la calle con un código de barras pegado en el hombro, como si fuera un producto a la venta." width="896" height="1200" loading="eager" fetchpriority="high"></figure>
 </div>
@@ -302,18 +322,38 @@ footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;ju
     d.addEventListener('click',function(e){ if(e.target===d) d.close(); });
     var c=d.querySelector('.tabla-dialog-close'); if(c) c.addEventListener('click',function(){d.close()});
   });
-  var ticker=document.querySelector('.hero-ticker');
-  if(ticker && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
-    var tItems=$('.hero-ticker-list li'),tDots=$('.hero-ticker-dots span'),tI=0,tTimer;
-    function tShow(n){
-      tItems[tI].classList.remove('on'); if(tDots[tI]) tDots[tI].classList.remove('on');
-      tI=n; tItems[tI].classList.add('on'); if(tDots[tI]) tDots[tI].classList.add('on');
-    }
-    function tStart(){ if(tItems.length>1) tTimer=setInterval(function(){ tShow((tI+1)%tItems.length) },3200) }
-    function tStop(){ clearInterval(tTimer) }
-    tStart();
-    ticker.addEventListener('mouseenter',tStop); ticker.addEventListener('mouseleave',tStart);
-    ticker.addEventListener('focusin',tStop); ticker.addEventListener('focusout',tStart);
+  var FC_ICONS={
+    sesion:'<rect x="10" y="14" width="44" height="40" rx="6"/><line x1="10" y1="24" x2="54" y2="24"/><line x1="20" y1="8" x2="20" y2="18"/><line x1="44" y1="8" x2="44" y2="18"/><path d="M22 38l7 7 13-15"/>',
+    interdisciplinar:'<circle cx="24" cy="26" r="14"/><circle cx="40" cy="26" r="14"/><circle cx="32" cy="40" r="14"/>',
+    tutoria:'<circle cx="32" cy="32" r="22"/><path d="M40 24l-6 14-14 6 6-14z" fill="currentColor" stroke="none"/>',
+    impacto:'<circle cx="32" cy="32" r="4" fill="currentColor" stroke="none"/><circle cx="32" cy="32" r="14"/><circle cx="32" cy="32" r="24"/>',
+    participacion:'<path d="M20 10h24v8a12 12 0 0 1-24 0z"/><path d="M20 12h-7a9 9 0 0 0 9 9"/><path d="M44 12h7a9 9 0 0 1-9 9"/><line x1="32" y1="30" x2="32" y2="42"/><line x1="24" y1="42" x2="40" y2="42"/><line x1="22" y1="54" x2="42" y2="54"/>',
+    video:'<rect x="8" y="14" width="48" height="36" rx="6"/><path d="M26 23l16 9-16 9z" fill="currentColor" stroke="none"/>',
+    itinerario:'<path d="M32 54V34"/><path d="M32 34c0-10-10-10-10-20"/><path d="M32 34c0-10 10-10 10-20"/><circle cx="22" cy="12" r="3" fill="currentColor" stroke="none"/><circle cx="42" cy="12" r="3" fill="currentColor" stroke="none"/><circle cx="32" cy="56" r="3" fill="currentColor" stroke="none"/>'
+  };
+  if(!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+    $('.flipcard').forEach(function(card){
+      var items; try{ items=JSON.parse(card.dataset.items) }catch(e){ items=null }
+      if(!items || items.length<2) return;
+      var inner=card.querySelector('.flipcard-inner');
+      var front=card.querySelector('.flipcard-front'), back=card.querySelector('.flipcard-back');
+      var showingFront=true, nextIdx=1;
+      function setFace(face,item){
+        face.querySelector('.fc-icon').innerHTML=FC_ICONS[item.icon]||'';
+        face.querySelector('.fc-text').textContent=item.text;
+      }
+      setFace(front,items[0]); setFace(back,items[1]);
+      function flip(){
+        inner.classList.toggle('flipped'); showingFront=!showingFront;
+        setTimeout(function(){
+          nextIdx=(nextIdx+1)%items.length;
+          setFace(showingFront?back:front,items[nextIdx]);
+        },380);
+        schedule();
+      }
+      function schedule(){ setTimeout(flip,2600+Math.random()*2800) }
+      schedule();
+    });
   }
   var navIn=document.querySelector('nav.menu .in'),fadeL=document.querySelector('nav.menu .fade-l'),fadeR=document.querySelector('nav.menu .fade-r');
   function updateMenuFades(){
