@@ -49,11 +49,16 @@ a{color:var(--violet)}
 }
 /* layout */
 .layout{max-width:1160px;margin-inline:auto;display:block}
-nav.menu{position:sticky;top:0;z-index:5;background:var(--bg);border-block:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
-nav.menu .in{display:flex;gap:4px;overflow-x:auto;padding-block:6px;scrollbar-width:thin}
+nav.menu{--mbg:color-mix(in srgb,var(--marker) 16%,var(--bg));position:sticky;top:0;z-index:5;background:var(--mbg);border-block:1px solid var(--line);margin-inline:-16px;padding-inline:16px}
+nav.menu .in{display:flex;gap:4px;overflow-x:auto;padding-block:6px;scrollbar-width:thin;scroll-behavior:smooth}
 nav.menu a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:var(--f-head);font-size:.98rem;padding:6px 12px;border-radius:6px}
 nav.menu a:hover{background:var(--soft)}
 nav.menu a.on{background:var(--marker);color:var(--on-marker)}
+nav.menu .fade{position:absolute;top:1px;bottom:1px;width:30px;pointer-events:none;z-index:1;transition:opacity .25s;opacity:0}
+nav.menu .fade-l{left:0;background:linear-gradient(to right,var(--mbg),transparent)}
+nav.menu .fade-r{right:0;background:linear-gradient(to left,var(--mbg),transparent)}
+@keyframes menu-hint{0%,100%{transform:translateX(0)}45%{transform:translateX(-14px)}}
+nav.menu .in.hint{animation:menu-hint 1.1s ease-in-out 1}
 aside.side{display:none}
 main{min-width:0;padding-block:8px 70px}
 @media (min-width:1020px){
@@ -223,7 +228,7 @@ footer svg{position:absolute;inset:0 0 auto 0;width:100%;height:110px}
 footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding-top:22px}
 @media (max-width:560px){.top{padding-block-start:92px}.strokes{height:90px;width:80vw;top:-20px}table{font-size:.88rem}.sesion{padding-inline:12px}.sesion header{gap:10px}}
 @media print{nav.menu,aside.side,.filter,.strokes,footer svg{display:none} details>*{display:block} .sesion{break-inside:avoid-page} body{font-size:10.5pt}}
-@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}a.node{transition:none}}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}a.node{transition:none}nav.menu .in{scroll-behavior:auto}nav.menu .in.hint{animation:none}}
 </style>
 </head>
 <body>
@@ -239,7 +244,7 @@ footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;ju
 <figure class="top-media"><img src="img/portada.jpg" alt="Vista trasera de una persona en la calle con un código de barras pegado en el hombro, como si fuera un producto a la venta." width="896" height="1200" loading="eager" fetchpriority="high"></figure>
 </div>
 </header>
-<nav class="menu" aria-label="Secciones"><div class="in"><a href="#recorrido">Recorrido</a><a href="#sec-1">Contexto</a><a href="#sec-2">Currículo</a><a href="#sec-3">Metodología</a><a href="#sec-4">Planificación</a><a href="#sec-5">Diversidad</a><a href="#sec-6">Evaluación</a><a href="#sec-7">Valoración</a><a href="#sec-8">Sesiones</a><a href="#anexo-i">Anexo I</a><a href="#anexo-ii">Anexo II</a><a href="#anexo-iii">Anexo III</a><a href="#anexo-iv">Anexo IV</a></div></nav>
+<nav class="menu" aria-label="Secciones"><div class="in"><a href="#recorrido">Recorrido</a><a href="#sec-1">Contexto</a><a href="#sec-2">Currículo</a><a href="#sec-3">Metodología</a><a href="#sec-4">Planificación</a><a href="#sec-5">Diversidad</a><a href="#sec-6">Evaluación</a><a href="#sec-7">Valoración</a><a href="#sec-8">Sesiones</a><a href="#anexo-i">Anexo I</a><a href="#anexo-ii">Anexo II</a><a href="#anexo-iii">Anexo III</a><a href="#anexo-iv">Anexo IV</a></div><span class="fade fade-l" aria-hidden="true"></span><span class="fade fade-r" aria-hidden="true"></span></nav>
 <div class="layout">
 <aside class="side"><nav aria-label="Secciones"><a href="#recorrido">Recorrido</a><a href="#sec-1">Contexto</a><a href="#sec-2">Currículo</a><a href="#sec-3">Metodología</a><a href="#sec-4">Planificación</a><a href="#sec-5">Diversidad</a><a href="#sec-6">Evaluación</a><a href="#sec-7">Valoración</a><a href="#sec-8">Sesiones</a><a href="#anexo-i">Anexo I</a><a href="#anexo-ii">Anexo II</a><a href="#anexo-iii">Anexo III</a><a href="#anexo-iv">Anexo IV</a></nav></aside>
 <main>
@@ -437,6 +442,25 @@ footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;ju
     d.addEventListener('click',function(e){ if(e.target===d) d.close(); });
     var c=d.querySelector('.tabla-dialog-close'); if(c) c.addEventListener('click',function(){d.close()});
   });
+  var navIn=document.querySelector('nav.menu .in'),fadeL=document.querySelector('nav.menu .fade-l'),fadeR=document.querySelector('nav.menu .fade-r');
+  function updateMenuFades(){
+    if(!navIn) return;
+    var max=navIn.scrollWidth-navIn.clientWidth;
+    if(fadeL) fadeL.style.opacity=navIn.scrollLeft>4?'1':'0';
+    if(fadeR) fadeR.style.opacity=(max>4 && navIn.scrollLeft<max-4)?'1':'0';
+  }
+  if(navIn){
+    updateMenuFades();
+    navIn.addEventListener('scroll',updateMenuFades,{passive:true});
+    window.addEventListener('resize',updateMenuFades);
+    var reduceMotion=window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if(!reduceMotion && navIn.scrollWidth>navIn.clientWidth+4){
+      setTimeout(function(){
+        navIn.classList.add('hint');
+        navIn.addEventListener('animationend',function(){navIn.classList.remove('hint')},{once:true});
+      },600);
+    }
+  }
   var oa=document.getElementById('openall');
   if(oa){var open=false;oa.addEventListener('click',function(){open=!open;$('.sesion details').forEach(function(d){d.open=open});oa.textContent=open?'Cerrar todas':'Abrir todas'})}
   $('a.node').forEach(function(a){a.addEventListener('click',function(){
