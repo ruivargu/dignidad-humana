@@ -150,16 +150,24 @@ ol.pasajes{list-style:none;margin:20px 0 28px;padding:0;display:grid;gap:14px;gr
 .autor{margin:30px 0 40px}
 .autor h3{margin-top:0}
 .credito{color:var(--muted);font-size:.95rem;max-width:68ch}
-details.texto-completo{border:1.5px solid var(--line);border-radius:10px;padding:2px 18px;margin:14px 0 22px;background:var(--soft)}
+details.texto-completo{border:1.5px solid var(--line);border-radius:10px;padding:2px 18px;margin:14px 0 10px;background:var(--soft)}
 details.texto-completo>summary{border-top:0}
 details.texto-completo p{max-width:68ch}
+.dl-completo{margin:0 0 22px}
+.dl-completo a{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-head);font-weight:600;font-size:.9rem;color:var(--on-marker);background:var(--marker);text-decoration:none;border-radius:99px;padding:8px 16px}
+.dl-completo a:hover{filter:brightness(.96)}
+.dl-completo a::before{content:"↓";font-weight:700}
 .bloques{display:grid;gap:14px;margin-top:6px;grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-details.bloque-texto{position:relative;border:1.5px solid var(--line);border-radius:12px;padding:4px 16px 10px;background:var(--bg)}
-details.bloque-texto>summary{border-top:0;font-size:1rem;color:var(--head);padding-top:14px}
-details.bloque-texto .bn{position:absolute;top:-14px;left:14px;font-family:var(--f-head);font-weight:600;background:var(--marker);color:var(--on-marker);min-width:2rem;height:2rem;display:grid;place-items:center;border-radius:50% 46% 52% 48%}
-details.bloque-texto .texto-contenido{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line)}
-details.bloque-texto .texto-contenido p{font-size:.92rem;max-width:none}
-details.bloque-texto:target{border-color:var(--violet);box-shadow:0 0 0 3px color-mix(in srgb,var(--violet) 25%,transparent)}
+.bloque-btn{all:unset;box-sizing:border-box;cursor:pointer;position:relative;display:block;width:100%;border:1.5px solid var(--line);border-radius:12px;padding:18px 16px 14px;background:var(--bg)}
+.bloque-btn:hover{border-color:var(--violet)}
+.bloque-btn .bn{position:absolute;top:-14px;left:14px;font-family:var(--f-head);font-weight:600;background:var(--marker);color:var(--on-marker);min-width:2rem;height:2rem;display:grid;place-items:center;border-radius:50% 46% 52% 48%}
+.bloque-btn .bt{display:block;font-family:var(--f-head);font-size:1rem;color:var(--head);line-height:1.3}
+dialog.texto-dialog{max-width:min(92vw,680px)}
+dialog.texto-dialog .tabla-dialog-body p{font-size:.97rem;line-height:1.6;max-width:none}
+.dialog-dl{margin:16px 0 0;padding-top:14px;border-top:1px dashed var(--line)}
+.dialog-dl a{display:inline-flex;align-items:center;gap:7px;font-family:var(--f-head);font-weight:600;font-size:.88rem;color:var(--violet);text-decoration:none;border:1.2px solid var(--violet);border-radius:99px;padding:7px 14px}
+.dialog-dl a:hover{background:var(--soft)}
+.dialog-dl a::before{content:"↓";font-weight:700}
 /* tablas grandes: botón que abre una ventana emergente */
 .tabla-btn{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;width:100%;margin:16px 0;font-family:var(--f-head);font-size:1rem;color:var(--violet);padding:12px 0;border-top:1px dashed var(--line)}
 .tabla-btn:hover{color:var(--head)}
@@ -266,7 +274,7 @@ footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;ju
     var f=b.dataset.f;
     $('.sesion').forEach(function(s){s.hidden=!(f==='all'||s.dataset.c.indexOf(f)>-1)});
   })});
-  $('.tabla-btn').forEach(function(b){b.addEventListener('click',function(){
+  $('.tabla-btn, .bloque-btn').forEach(function(b){b.addEventListener('click',function(){
     var d=document.getElementById(b.dataset.dialog); if(d && d.showModal) d.showModal();
   })});
   $('.tabla-dialog').forEach(function(d){
@@ -300,6 +308,7 @@ footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;ju
   function openTargetDetails(){
     var h=location.hash.slice(1); if(!h) return;
     var el=document.getElementById(h); if(!el) return;
+    if(el.tagName==='DIALOG'){ if(el.showModal) el.showModal(); return; }
     var d=el.closest('details'); if(d) d.open=true;
   }
   window.addEventListener('hashchange',openTargetDetails);

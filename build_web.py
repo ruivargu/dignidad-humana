@@ -1,4 +1,9 @@
 import docx,re,html,json,subprocess
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import cm
+from reportlab.lib.enums import TA_JUSTIFY
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph as RLParagraph, Spacer
 from docx.text.paragraph import Paragraph
 from docx.oxml.ns import qn
 import os; os.chdir(os.path.dirname(os.path.abspath(__file__))); SRC='SdA_Dignidad_Humana_3_4_ESO_v3.docx'
@@ -157,7 +162,7 @@ secs=[];cur=None
 for b in rest:
     if b[0]=='h2': cur={'title':b[2],'blocks':[]}; secs.append(cur)
     else: cur['blocks'].append(b)
-NAV={'1':'Contexto','2':'Currículo','3':'Metodología','4':'Planificación','5':'Diversidad','6':'Evaluación','7':'Valoración','8':'Sesiones','Anexo I':'Anexo I','Anexo II':'Anexo II','Anexo III':'Anexo III'}
+NAV={'1':'Contexto','2':'Currículo','3':'Metodología','4':'Planificación','5':'Diversidad','6':'Evaluación','7':'Valoración','8':'Sesiones','Anexo I':'Anexo I - Currículo 3º','Anexo II':'Anexo II - Currículo 4º','Anexo III':'Anexo III - Evaluación'}
 
 def fig(src,alt,w,h,cap):
     return f'<figure class="resource"><img src="img/{src}" alt="{E(alt)}" width="{w}" height="{h}" loading="lazy"><figcaption>{E(cap)}</figcaption></figure>'
@@ -312,17 +317,37 @@ def track(lbl,items,extra=''):
 legend=''.join(f'<li><i class="sw m-{k}"></i>{v}</li>' for k,v in NAMES.items())
 TIMELINE=f'<section id="recorrido" class="reco"><h2><span>Recorrido de las 10 sesiones</span></h2><p>Cada sesión se enlaza con su ficha. En 4º ESO las sesiones 8 y 9 se hacen en Tecnología o en la hora de Tutoría, según el centro.</p>{track("3º ESO",T3)}{track("4º ESO",T4)}<ul class="legend">{legend}</ul></section>'
 
-# ---- textos originales (Rey y Gil-Robles), texto completo + bloques con ancla
+# ---- textos originales (Rey y Gil-Robles), texto completo + bloques con ancla, todo descargable en PDF
 def _doc_lines(path):
     r=subprocess.run(['textutil','-convert','txt','-stdout',path],capture_output=True,text=True,check=True)
     return [l.strip() for l in r.stdout.split('\n') if l.strip() and not l.strip().startswith('PAGE')]
 def ptag(paras): return ''.join(f'<p>{E(x)}</p>' for x in paras)
-def bloque_art(prefix,n,titulo,paras):
-    return f'<details class="bloque-texto" id="{prefix}-{n}"><summary><span class="bn">{n}</span> {E(titulo)}</summary><div class="texto-contenido">{ptag(paras)}</div></details>'
+
+os.makedirs('textos',exist_ok=True)
+_pdf_styles=getSampleStyleSheet()
+_pdf_title=ParagraphStyle('TituloPDF',parent=_pdf_styles['Title'],fontName='Helvetica-Bold',fontSize=16,leading=20,spaceAfter=4)
+_pdf_sub=ParagraphStyle('SubPDF',parent=_pdf_styles['Normal'],fontName='Helvetica-Oblique',fontSize=10.5,textColor='#585872',spaceAfter=16)
+_pdf_body=ParagraphStyle('CuerpoPDF',parent=_pdf_styles['Normal'],fontName='Helvetica',fontSize=11,leading=16,alignment=TA_JUSTIFY,spaceAfter=10)
+def make_pdf(path,titulo,subtitulo,paras):
+    doc=SimpleDocTemplate(path,pagesize=A4,topMargin=2.4*cm,bottomMargin=2.2*cm,leftMargin=2.4*cm,rightMargin=2.4*cm,title=titulo)
+    story=[RLParagraph(E(titulo),_pdf_title)]
+    if subtitulo: story.append(RLParagraph(E(subtitulo),_pdf_sub))
+    else: story.append(Spacer(1,10))
+    for p in paras: story.append(RLParagraph(E(p),_pdf_body))
+    doc.build(story)
+
+def bloque_art(prefix,n,titulo,paras,pdf_path):
+    tid=f'{prefix}-{n}'
+    return (f'<button type="button" class="bloque-btn" data-dialog="{tid}"><span class="bn">{n}</span><span class="bt">{E(titulo)}</span></button>'
+            f'<dialog class="tabla-dialog texto-dialog" id="{tid}"><div class="tabla-dialog-head"><strong>{E(titulo)}</strong>'
+            f'<button type="button" class="tabla-dialog-close" aria-label="Cerrar">×</button></div>'
+            f'<div class="tabla-dialog-body">{ptag(paras)}'
+            f'<p class="dialog-dl"><a href="{pdf_path}" target="_blank" rel="noopener">Descargar este fragmento (PDF)</a></p></div></dialog>')
 
 rey_lines=_doc_lines('doc/dignidad2_FRey.doc')
 REY_BODY=rey_lines[2:22]
 REY_BIO=rey_lines[22] if len(rey_lines)>22 else ''
+REY_TITLE='Fernando Rey Martínez · «Dignidad humana»'
 REY_BLOCKS=[
  (1,'Kant y la persona como fin',REY_BODY[0:1]),
  (2,'Reconocimiento jurídico tras la Segunda Guerra Mundial y dignidad social',REY_BODY[1:2]),
@@ -333,37 +358,44 @@ REY_BLOCKS=[
  (7,'Dignidad social y mínimo existencial',REY_BODY[13:14]),
  (8,'Posibles desarrollos de la idea de dignidad para el alumnado',REY_BODY[14:20]),
 ]
-rey_blocks_html=''.join(bloque_art('texto-rey',n,t,p) for n,t,p in REY_BLOCKS)
+for n,t,p in REY_BLOCKS: make_pdf(f'textos/rey-pasaje-{n}.pdf',f'Pasaje {n}. {t}',REY_TITLE,p)
+rey_blocks_html=''.join(bloque_art('texto-rey',n,t,p,f'textos/rey-pasaje-{n}.pdf') for n,t,p in REY_BLOCKS)
 rey_full=ptag(REY_BODY)+f'<p class="credito">{E(REY_BIO)}</p>'
+make_pdf('textos/rey-completo.pdf',REY_TITLE,REY_BIO,REY_BODY)
 
-gd=docx.Document('doc/Principios y valores en crisis-corregido Alvaro.docx')
+gd=docx.Document('doc/Definitivo_Alvaro Gil Robles.docx')
 gr_lines=[p.text.strip() for p in gd.paragraphs if p.text.strip()]
 GR_PRE=gr_lines[2]
+GR_TITLE='Álvaro Gil-Robles y Gil Delgado · «Principios y valores en crisis»'
 GR_BLOCKS=[
  ('I','El largo camino histórico hacia el reconocimiento de la dignidad',gr_lines[3:10]),
- ('II','La Declaración Universal y el proyecto europeo',gr_lines[10:22]),
- ('III','Compartir y defender los valores: el compromiso constitucional',gr_lines[22:31]),
+ ('II','La Declaración Universal y el proyecto europeo',gr_lines[10:16]),
+ ('III','Compartir y defender los valores: el compromiso constitucional',gr_lines[16:19]),
 ]
-gr_blocks_html=''.join(bloque_art('texto-gr',n,t,p) for n,t,p in GR_BLOCKS)
+for n,t,p in GR_BLOCKS: make_pdf(f'textos/gilrobles-fragmento-{n}.pdf',f'Fragmento {n}. {t}',GR_TITLE,p)
+gr_blocks_html=''.join(bloque_art('texto-gr',n,t,p,f'textos/gilrobles-fragmento-{n}.pdf') for n,t,p in GR_BLOCKS)
 gr_full=ptag([GR_PRE]+GR_BLOCKS[0][2]+GR_BLOCKS[1][2]+GR_BLOCKS[2][2])
+make_pdf('textos/gilrobles-completo.pdf',GR_TITLE,None,[GR_PRE]+GR_BLOCKS[0][2]+GR_BLOCKS[1][2]+GR_BLOCKS[2][2])
 
 TEXTOS=f'''<section id="anexo-iv"><h2><span>Anexo IV. Textos de referencia</span></h2>
-<p>Este anexo reproduce, íntegros y sin cambios, los dos textos de referencia de la SdA. Los bloques temáticos con los que trabaja la guía son ocho pasajes en el texto de Rey (Anexo IV.A) y tres fragmentos en el de Gil-Robles (Anexo IV.B). Cada sesión parte de un pasaje o fragmento concreto; aquí puedes leerlos enteros o ir directamente al bloque citado en cada ficha.</p>
+<p>Este anexo reproduce, íntegros y sin cambios, los dos textos de referencia de la SdA. Los bloques temáticos con los que trabaja la guía son ocho pasajes en el texto de Rey (Anexo IV.A) y tres fragmentos en el de Gil-Robles (Anexo IV.B). Cada sesión parte de un pasaje o fragmento concreto; aquí puedes leerlos enteros, descargar cada texto completo en PDF, o abrir directamente el bloque citado en cada ficha (también descargable por separado).</p>
 <div class="autor">
-<h3>IV.A. Fernando Rey Martínez · «Dignidad humana»</h3>
+<h3>IV.A. {REY_TITLE}</h3>
 <p class="credito">Catedrático de Derecho Constitucional de la Universidad de Valladolid. Texto guía: todas las sesiones parten de uno de sus ocho pasajes.</p>
 <details class="texto-completo"><summary>Leer el texto completo</summary>{rey_full}</details>
+<p class="dl-completo"><a href="textos/rey-completo.pdf" target="_blank" rel="noopener">Descargar el texto completo (PDF)</a></p>
 <div class="bloques">{rey_blocks_html}</div>
 </div>
 <div class="autor">
-<h3>IV.B. Álvaro Gil-Robles y Gil Delgado · «Principios y valores en crisis»</h3>
+<h3>IV.B. {GR_TITLE}</h3>
 <p class="credito">Texto de apoyo secundario y puntual. Esta guía cita los fragmentos I y III; el fragmento II queda aquí disponible para quien quiera ampliarlo.</p>
 <details class="texto-completo"><summary>Leer el texto completo</summary>{gr_full}</details>
+<p class="dl-completo"><a href="textos/gilrobles-completo.pdf" target="_blank" rel="noopener">Descargar el texto completo (PDF)</a></p>
 <div class="bloques">{gr_blocks_html}</div>
 </div>
 </section>'''
 
-navhtml+='<a href="#anexo-iv">Anexo IV</a>'
+navhtml+='<a href="#anexo-iv">Anexo IV - Textos</a>'
 main+=TEXTOS
 tpl=open('tpl.html').read()
 out=tpl.replace('{{NAV}}',navhtml).replace('{{TITLE0}}',E(title0)).replace('{{H1}}',E(h1)).replace('{{MAIN}}',TIMELINE+main).replace('{{SIDE}}',navhtml)
