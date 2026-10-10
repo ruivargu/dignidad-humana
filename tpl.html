@@ -12,17 +12,17 @@
 :root{
   --bg:#ffffff; --ink:#1d1d2b; --head:#1b2a6b; --violet:#3a35c9; --marker:#ffe91f; --on-marker:#1b2a6b;
   --line:#c9cbe0; --rule:#1d1d2b; --th:#eeedfb; --soft:#f6f5ff; --zebra:#fafaff; --muted:#585872; --focus:#3a35c9;
-  --w1:#b9ece3; --w2:#c9b6ec; --w3:#f6b8cf; --stroke1:#ffe9a3; --stroke2:#a9c6ee;
+  --w1:#b9ece3; --w2:#c9b6ec; --w3:#f6b8cf; --w-green:#c7ecc4; --stroke1:#ffe9a3; --stroke2:#a9c6ee;
   --c-tut:#8fe0d0; --c-evce:#c3b2f2; --c-gh:#f7b3cd; --c-len:#ffe45c; --c-tec:#a9cdf5; --on-c:#1b2a6b;
   --f-head:'Outfit','Nunito Sans',system-ui,sans-serif; --f-body:'Nunito Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#12142a; --ink:#e7e8f5; --head:#c3caff; --violet:#aaa6ff; --line:#3b4070; --rule:#6b7099; --th:#232852; --soft:#191c3a; --zebra:#161935; --muted:#a3a6c4; --focus:#ffe91f;
-  --w1:#1d4a4d; --w2:#352e66; --w3:#5a2d49; --stroke1:#5a5224; --stroke2:#27406b;
+  --w1:#1d4a4d; --w2:#352e66; --w3:#5a2d49; --w-green:#1f4a30; --stroke1:#5a5224; --stroke2:#27406b;
   --c-tut:#2a6f66; --c-evce:#54478f; --c-gh:#8a3f62; --c-len:#8c7a1a; --c-tec:#2f5c91; --on-c:#f2f3ff; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12142a; --ink:#e7e8f5; --head:#c3caff; --violet:#aaa6ff; --line:#3b4070; --rule:#6b7099; --th:#232852; --soft:#191c3a; --zebra:#161935; --muted:#a3a6c4; --focus:#ffe91f;
-  --w1:#1d4a4d; --w2:#352e66; --w3:#5a2d49; --stroke1:#5a5224; --stroke2:#27406b;
+  --w1:#1d4a4d; --w2:#352e66; --w3:#5a2d49; --w-green:#1f4a30; --stroke1:#5a5224; --stroke2:#27406b;
   --c-tut:#2a6f66; --c-evce:#54478f; --c-gh:#8a3f62; --c-len:#8c7a1a; --c-tec:#2f5c91; --on-c:#f2f3ff; color-scheme:dark}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;scroll-padding-top:76px}
@@ -38,9 +38,19 @@ a{color:var(--violet)}
 .top h1{font-family:var(--f-head);font-weight:600;font-size:clamp(1.8rem,4.4vw,2.9rem);line-height:1.18;margin:0 0 22px;color:var(--head);max-width:26ch;text-wrap:balance}
 .top h1 span{display:block;width:fit-content;max-width:100%;background:var(--marker);color:var(--on-marker);padding:.04em .3em .1em;margin:0 0 .15em -.3em;clip-path:polygon(0 8%,2% 0,50% 5%,100% 0,99% 55%,100% 100%,55% 95%,0 100%)}
 .top p.lead{max-width:60ch;font-size:1.2rem;margin:0}
-.top .facts{display:flex;flex-wrap:wrap;row-gap:4px;margin:20px 0 0;padding:0;list-style:none;color:var(--muted);font-size:.95rem}
-.top .facts li{display:inline-flex;align-items:center}
-.top .facts li:not(:first-child)::before{content:"";width:4px;height:4px;flex:none;border-radius:50%;background:var(--rule);margin:0 10px;display:inline-block}
+.hero-ticker{margin:22px 0 0;max-width:46ch;background:var(--w-green);border-radius:12px;padding:12px 18px}
+.hero-ticker-list{position:relative;margin:0;padding:0;list-style:none;height:1.7em}
+.hero-ticker-list li{position:absolute;inset:0;display:flex;align-items:center;margin:0;max-width:none;color:var(--head);font-family:var(--f-head);font-weight:500;font-size:1.05rem;opacity:0;transform:translateY(10px);transition:opacity .55s ease,transform .55s ease}
+.hero-ticker-list li.on{opacity:1;transform:translateY(0)}
+.hero-ticker-dots{display:flex;gap:6px;margin:12px 0 0;padding:0;list-style:none}
+.hero-ticker-dots span{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .3s,transform .3s}
+.hero-ticker-dots span.on{background:var(--violet);transform:scale(1.35)}
+@media (prefers-reduced-motion:reduce){
+  .hero-ticker-list{position:static;height:auto;display:flex;flex-wrap:wrap;row-gap:4px}
+  .hero-ticker-list li{position:static;opacity:1;transform:none;color:var(--muted);font-family:var(--f-body);font-weight:400;font-size:.95rem;display:inline-flex}
+  .hero-ticker-list li:not(:first-child)::before{content:"";width:4px;height:4px;flex:none;border-radius:50%;background:var(--rule);margin:0 10px;display:inline-block}
+  .hero-ticker-dots{display:none}
+}
 .top-grid{display:grid;gap:30px}
 .top-media{margin:28px 0 0;border:1.5px solid var(--rule);border-radius:16px;overflow:hidden;background:var(--soft)}
 .top-media img{display:block;width:100%;height:auto}
@@ -248,7 +258,18 @@ footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;ju
 <p class="kicker">Situación de aprendizaje · 3º y 4º de ESO</p>
 <h1><span>¿Cuánto vale una persona?</span> Dignidad humana en 120 segundos</h1>
 <p class="lead">Guía didáctica con diez sesiones por curso, itinerarios para 3º y 4º ESO, fichas de sesión y evaluación. El producto final es un vídeo de dos minutos para el X Premio Escolar Valores Democráticos.</p>
-<ul class="facts"><li>10 sesiones por curso</li><li>Interdisciplinar o por materia</li><li>Dentro del Plan de Acción Tutorial</li></ul>
+<div class="hero-ticker" aria-label="Datos clave de la situación de aprendizaje">
+<ul class="hero-ticker-list">
+<li class="on">10 sesiones por curso</li>
+<li>Interdisciplinar o por materia</li>
+<li>Dentro del Plan de Acción Tutorial</li>
+<li>Impacto en la comunidad educativa</li>
+<li>Participación en concurso</li>
+<li>Producto final visual</li>
+<li>2 itinerarios: 3º ESO · 4º ESO</li>
+</ul>
+<div class="hero-ticker-dots" aria-hidden="true"><span class="on"></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+</div>
 </div>
 <figure class="top-media"><img src="img/portada.jpg" alt="Vista trasera de una persona en la calle con un código de barras pegado en el hombro, como si fuera un producto a la venta." width="896" height="1200" loading="eager" fetchpriority="high"></figure>
 </div>
@@ -281,6 +302,19 @@ footer .in{position:relative;max-width:1160px;margin-inline:auto;display:flex;ju
     d.addEventListener('click',function(e){ if(e.target===d) d.close(); });
     var c=d.querySelector('.tabla-dialog-close'); if(c) c.addEventListener('click',function(){d.close()});
   });
+  var ticker=document.querySelector('.hero-ticker');
+  if(ticker && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches)){
+    var tItems=$('.hero-ticker-list li'),tDots=$('.hero-ticker-dots span'),tI=0,tTimer;
+    function tShow(n){
+      tItems[tI].classList.remove('on'); if(tDots[tI]) tDots[tI].classList.remove('on');
+      tI=n; tItems[tI].classList.add('on'); if(tDots[tI]) tDots[tI].classList.add('on');
+    }
+    function tStart(){ if(tItems.length>1) tTimer=setInterval(function(){ tShow((tI+1)%tItems.length) },3200) }
+    function tStop(){ clearInterval(tTimer) }
+    tStart();
+    ticker.addEventListener('mouseenter',tStop); ticker.addEventListener('mouseleave',tStart);
+    ticker.addEventListener('focusin',tStop); ticker.addEventListener('focusout',tStart);
+  }
   var navIn=document.querySelector('nav.menu .in'),fadeL=document.querySelector('nav.menu .fade-l'),fadeR=document.querySelector('nav.menu .fade-r');
   function updateMenuFades(){
     if(!navIn) return;
